@@ -1,0 +1,5 @@
+CREATE TABLE `usermanagement`.`workmate` ( `userId` INT(11) NOT NULL AUTO_INCREMENT ,  `userName` VARCHAR(250) NOT NULL ,  `userEmail` VARCHAR(250) NOT NULL ,  `userRole` VARCHAR(250) NOT NULL ,  `userPassword` VARCHAR(250) NOT NULL ,    PRIMARY KEY  (`userId`),    UNIQUE  `Email` (`userEmail`),    UNIQUE  `Password` (`userPassword`)) ENGINE = InnoDB;
+
+INSERT INTO `workmate` (`userId`, `userName`, `userEmail`, `userRole`, `userPassword`) VALUES ('1', 'Saravjeet Singh', 'sarav@sarav.com', 'admin', 'Sarav');
+
+UPDATE `workmate` SET `userPassword` = 'saravjeet' WHERE `workmate`.`userId` = 1;
