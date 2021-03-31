@@ -1,23 +1,24 @@
 <?php
     include('db.php');
-    class handleAdmin{
+    class handleUser{
         public function loginUser($con,$query,$email,$password){
             $table=mysqli_query($con,$query);
             if($table){
                 session_start();
                 while($row=$table->fetch_assoc()){
                     if($row['userEmail']==$email){
-                        if($row['userRole']=="admin"){
+                        if($row['userRole']=="staff"){
+                            // $row['userPassword']=sha1($row['userPassword']);
                             if($row['userPassword']==$password){
-                                $_SESSION['userRole']=$row['userRole'];
                                 $_SESSION['userId']=$row['userId'];
+                                $_SESSION['userRole']=$row['userRole'];
                                 echo '<script>alert("You are logged in")</script>';
-                                header("Location:adminInterface.php");
+                                header("Location:staffInterface.php");
                             }else{
                                 echo '<script>alert("please enter a valid password!")</script>';
                             }
                         }else{
-                            echo '<script>alert("you are not an admin! please take care of that.")</script>';
+                            echo '<script>alert("you are not from Staff! please take care of that.")</script>';
                         }
                     }else{
                         continue;
@@ -31,16 +32,16 @@
     if(isset($_POST['loginClick'])){
         $loginEmail=$_POST['loginEmail'];
         $loginPassword=$_POST['loginPassword'];
+        // $loginPassword=sha1($loginPassword);
         $dbObj=new dbConnection();
-        // var_dump($dbObj);
         $dbObj->connectDb();
         $queryObj = new createQuery();
         $queryObj->selectAllUserQuery();
-        $adminObj = new handleAdmin();
-        $adminObj->loginUser($dbObj->con,$queryObj->myQuery,$loginEmail,$loginPassword);
+        $userObj = new handleUser();
+        $userObj->loginUser($dbObj->con,$queryObj->myQuery,$loginEmail,$loginPassword);
 
-    }elseif (isset($_POST['staffPageClick'])) {
-        header("Location:staff.php"); 
+    }elseif (isset($_POST['adminPageClick'])) {
+        header("Location:admin.php"); 
     }elseif (isset($_POST['managerPageClick'])) {
         header("Location:manager.php"); 
     }elseif (isset($_POST['welcomePageClick'])) {
@@ -60,17 +61,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <title>Admin LogIn</title>
+    <title>staffLogin</title>
 </head>
 
 <body class="bg-dark">
     <div class="container bg-dark">
         <div class="jumbotron bg-success">
-            <h3>This website is a demo website to learn PHP and to make user management system.</h3>
+            <h3>If You a staff Member you can login On this page.</h3>
         </div>
         <div class="row">
             <div class="col card" style="width: 18rem;">
-                <div>You Can Login as an Admin.</div>
+                <div>You Can Login as a staff.</div>
                 <form action="" method="POST" class="form" id="loginForm">
                     <div class="form-group">
                         <input type="text" name="loginEmail" id="loginEmail" class="form-control" placeholder="Enter Your Email" required> 
@@ -80,15 +81,14 @@
                     </div>
                     <div class="form-group">
                         <button name="loginClick" class="btn btn-primary">LogIN</button>
+                        
                     </div>
                 </form>
                 <form action="" method="POST">
-                    <button name="staffPageClick" class="btn btn-danger">Go To staff page</button>
-                    <button name="managerPageClick" class="btn btn-danger">Go To manager page</button>
-                    <button name="welcomePageClick" class="btn btn-secondary">Go To welcome Page</button>
+                    <button name="adminPageClick" class="btn btn-danger">Go To Admin Page</button>
+                    <button name="managerPageClick" class="btn btn-danger">Go To Manager Page</button>
+                    <button name="welcomePageClick" class="btn btn-warning">Go To welcome Page</button>
                 </form>
-                </br>
-                <p><b>Note:</b> If You are not an admin then contact with admin to register Yourself with us...</p>
             </div>
         </div>
     </div>
