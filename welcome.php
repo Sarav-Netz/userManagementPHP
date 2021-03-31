@@ -1,10 +1,13 @@
 <?php
     if(isset($_GET['adminButton'])){
         echo "<div class='jumbotron'>i'm the admin</div>";
-        header("Location:http://localhost:8080/dashboard/PHPlearning/userManagement/admin.php");
-    }else if(isset($_GET['endUserClick'])){
+        header("Location:admin.php");
+    }else if(isset($_GET['staffClick'])){
         echo "<div class='jumbotron'>i'm the end User</div>";
-        header("Location:http://localhost:8080/dashboard/PHPlearning/userManagement/endUser.php");
+        header("Location:staff.php");
+    }else if(isset($_GET['managerClick'])){
+        echo "<div class='jumbotron'>i'm the end User</div>";
+        header("Location:manager.php");
     }else{
         echo "<div class='jumbotron bg-dark text-warning' style=\"font-size:30px;\">i'm from the welcome page and working perfectly</div>";
     }
@@ -19,10 +22,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <title>Select Profile</title>
+    <title>Welcome Page</title>
 </head>
 
-<body>
+<body class="bg-secondary">
     <div class="container">
         <div class="row">
             <div class="card col-md-6 bg-success">
@@ -30,7 +33,8 @@
                 <div>
                     <form action="" method="GET" class="form">
                         <button name="adminButton" class="btn btn-primary">Admin</button>
-                        <button name="endUserClick" class="btn btn-danger">End User</button>
+                        <button name="managerClick" class="btn btn-danger">Manger</button>
+                        <button name="staffClick" class="btn btn-danger">Staff</button>
                     </form>
                 </div>
             </div>
