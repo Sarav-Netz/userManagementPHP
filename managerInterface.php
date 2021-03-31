@@ -70,17 +70,32 @@
                 while($row=$table->fetch_assoc()){
                     if($row['userRole']=="staff"){
                         echo "</br>";
-                        echo "user ID".$row['userId'];
-                        echo "user name".$row['userName'];
-                        echo "userEmail:".$row['userEmail'];
-                        echo "user Role:".$row['userRole'];
-                        echo "</hr>";
+                        echo " user ID ".$row['userId'];
+                        echo " user name ".$row['userName'];
+                        echo " userEmail: ".$row['userEmail'];
+                        echo " user Role: ".$row['userRole'];
+                        echo " user valid:".$row['valid'];
+                        echo "<hr/>";
                     }else{
                         continue;
                     }
                 }
             }else{
                 echo 'we are not able to do this task';
+            }
+        }
+        public function validateStaff($con,$query){
+            if(mysqli_query($con,$query)){
+                echo '<script>alert("staff Member approved Successfully!")</script>';
+            }else{
+                echo '<script>alert("We are not able to do this task! please try again.")</script>';
+            }
+        }
+        public function deValidateStaff($con,$query){
+            if(mysqli_query($con,$query)){
+                echo '<script>alert("staff Member Blocked Successfully!")</script>';
+            }else{
+                echo '<script>alert("We are not able to do this task! please try again.")</script>';
             }
         }
     }
@@ -139,14 +154,15 @@
         }else if(isset($_POST['addNewUser'])){
             $userName=$_POST['newUserName'];
             $userEmail=$_POST['newUserEmail'];
-            $userRole=$_POST['newUserRole'];
+            $userRole="staff";
             $userRole=strtolower($userRole);
             $userPassword=$_POST['newUserPassword'];
+            $valid='no';
             if($userRole=='staff'){
                 $dbObj=new dbConnection();
                 $dbObj->connectDb();
                 $queryObj=new createQuery();
-                $queryObj->addUserQuery($userName,$userEmail,$userRole,$userPassword);
+                $queryObj->addUserQuery($userName,$userEmail,$userRole,$userPassword,$valid);
                 $userObj=new managerChange();
                 $userObj->addNewUser($dbObj->con,$queryObj->myQuery);
                 $dbObj->dissconnectDb();
@@ -154,7 +170,7 @@
                 echo '<script>alert("You are allowed to add staff members only")</script>';
             }
         }else if(isset($_POST['otherUserInfo'])){
-            $userId=$_POST['searchOrDeleteUserId'];
+            $userId=$_POST['randomQueryUserId'];
             $dbObj=new dbConnection();
             $queryObj=new createQuery();
             $managerObj=new managerChange();
@@ -169,7 +185,7 @@
                 echo '<script>alert("You are not allowed to do this task")</script>';
             }
         }else if(isset($_POST['otherUserDeletion'])){
-            $userId=$_POST['searchOrDeleteUserId'];
+            $userId=$_POST['randomQueryUserId'];
             $dbObj=new dbConnection();
             $queryObj=new createQuery();
             $managerObj=new managerChange();
@@ -179,6 +195,36 @@
             if($managerObj->makeChange){
                 $queryObj->deleteQuery($userId);
                 $managerObj->deleteAnyUser($dbObj->con,$queryObj->myQuery);
+                $dbObj->dissconnectDb();
+            }else{
+                echo '<script>alert("You are not allowed to do this task")</script>';
+            }
+        }else if(isset($_POST['approveStaff'])){
+            $userId=$_POST['randomQueryUserId'];
+            $dbObj=new dbConnection();
+            $queryObj=new createQuery();
+            $managerObj=new managerChange();
+            $dbObj->connectDb();
+            $queryObj->selectWithCond($userId);
+            $managerObj->allowToChange($dbObj->con,$queryObj->myQuery);
+            if($managerObj->makeChange){
+                $queryObj->validateQuery($userId);
+                $managerObj->validateStaff($dbObj->con,$queryObj->myQuery);
+                $dbObj->dissconnectDb();
+            }else{
+                echo '<script>alert("You are not allowed to do this task")</script>';
+            }
+        }else if(isset($_POST['disApproveStaff'])){
+            $userId=$_POST['randomQueryUserId'];
+            $dbObj=new dbConnection();
+            $queryObj=new createQuery();
+            $managerObj=new managerChange();
+            $dbObj->connectDb();
+            $queryObj->selectWithCond($userId);
+            $managerObj->allowToChange($dbObj->con,$queryObj->myQuery);
+            if($managerObj->makeChange){
+                $queryObj->deValidateQuery($userId);
+                $managerObj->deValidateStaff($dbObj->con,$queryObj->myQuery);
                 $dbObj->dissconnectDb();
             }else{
                 echo '<script>alert("You are not allowed to do this task")</script>';
@@ -276,7 +322,6 @@
                             <form action="" method="POST">
                                 <input type="text" class="form-control" name="newUserName" placeholder="Enter Name for new user">
                                 <input type="text"  name="newUserEmail" class="form-control" placeholder="enter email for new user">
-                                <input type="text" class="form-control" name="newUserRole" placeholder="enter role for new user either endUser/admin" >
                                 <input type="text"  name="newUserPassword" class="form-control" placeholder="enter password for new user">
                                 <button  class="btn btn-primary" name="addNewUser">Add </button>
                                 <button  class="btn btn-default"  data-dismiss="modal">Close</button>
@@ -288,9 +333,11 @@
         </div>
         <div>
             <form action="" method="POST">
-                <input type="text" name="searchOrDeleteUserId" placeholder="enter user id" require>
+                <input type="text" name="randomQueryUserId" placeholder="enter user id" require>
                 <button class="btn btn-primary bg-dark" name="otherUserInfo">Show Info of staff Memeber</button>
                 <button class="btn btn-primary bg-dark" name="otherUserDeletion">Delete Staff member</button>
+                <button class="btn btn-primary bg-dark" name="approveStaff">Approve Staff member</button>
+                <button class="btn btn-primary bg-dark" name="disApproveStaff">Block Staff member</button>
             </form>
         </div>    
     </div>

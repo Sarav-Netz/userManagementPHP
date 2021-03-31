@@ -9,10 +9,14 @@
                     if($row['userEmail']==$email){
                         if($row['userRole']=="manager"){
                             if($row['userPassword']==$password){
-                                $_SESSION['userRole']=$row['userRole'];
-                                $_SESSION['userId']=$row['userId'];
-                                echo '<script>alert("You are logged in")</script>';
-                                header("Location:managerInterface.php");
+                                if($row['valid']=="yes"){
+                                    $_SESSION['userRole']=$row['userRole'];
+                                    $_SESSION['userId']=$row['userId'];
+                                    echo '<script>alert("You are logged in")</script>';
+                                    header("Location:managerInterface.php");
+                                }else{
+                                    echo '<script>alert("Your account is not approved!please wait until it is not approved.")</script>';
+                                }
                             }else{
                                 echo '<script>alert("please enter a valid password!")</script>';
                             }

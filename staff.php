@@ -10,10 +10,14 @@
                         if($row['userRole']=="staff"){
                             // $row['userPassword']=sha1($row['userPassword']);
                             if($row['userPassword']==$password){
-                                $_SESSION['userId']=$row['userId'];
-                                $_SESSION['userRole']=$row['userRole'];
-                                echo '<script>alert("You are logged in")</script>';
-                                header("Location:staffInterface.php");
+                                if($row['valid']=="yes"){
+                                    $_SESSION['userId']=$row['userId'];
+                                    $_SESSION['userRole']=$row['userRole'];
+                                    echo '<script>alert("You are logged in")</script>';
+                                    header("Location:staffInterface.php");
+                                }else{
+                                    echo '<script>alert("You are not approved yet!")</script>';
+                                }
                             }else{
                                 echo '<script>alert("please enter a valid password!")</script>';
                             }
@@ -28,6 +32,13 @@
                 echo '<script>alert("Please log in Carefully!")</script>';
             }
         }
+        public function registerUser($con,$query){
+            if(mysqli_query($con,$query)){
+                echo '<script>alert("You are register successfully! wait untill you get the approvel")</script>';
+            }else{
+                echo '<script>alert("Sorry! but we are not able to process your registration.")</script>';
+            }
+        }
     }
     if(isset($_POST['loginClick'])){
         $loginEmail=$_POST['loginEmail'];
@@ -40,6 +51,18 @@
         $userObj = new handleUser();
         $userObj->loginUser($dbObj->con,$queryObj->myQuery,$loginEmail,$loginPassword);
 
+    }elseif (isset($_POST['registrationClick'])) {
+        $registrationName=$_POST['registrationName'];
+        $registrationEmail=$_POST['registrationEmail'];
+        $registrationPassword=$_POST['registrationPassword'];
+        $registrationRole="staff";
+        $registrationValid="no";
+        $dbObj=new dbConnection();
+        $dbObj->connectDb();
+        $queryObj = new createQuery();
+        $queryObj->addUserQuery($registrationName,$registrationEmail,$registrationRole,$registrationPassword,$registrationValid);
+        $userObj = new handleUser();
+        $userObj->registerUser($dbObj->con,$queryObj->myQuery);
     }elseif (isset($_POST['adminPageClick'])) {
         header("Location:admin.php"); 
     }elseif (isset($_POST['managerPageClick'])) {
@@ -88,6 +111,24 @@
                     <button name="adminPageClick" class="btn btn-danger">Go To Admin Page</button>
                     <button name="managerPageClick" class="btn btn-danger">Go To Manager Page</button>
                     <button name="welcomePageClick" class="btn btn-warning">Go To welcome Page</button>
+                </form>
+            </div>
+            <div class="col card" style="width: 18rem;">
+                <div>You Can Register with us.</div>
+                <form action="" method="POST" class="form" id="registrationForm">
+                    <div class="form-group">
+                        <input type="text" name="registrationName" id="registrationName" class="form-control" placeholder="Enter Your Name" required> 
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="registrationEmail" id="registrationEmail" class="form-control" placeholder="Enter Your Email" required> 
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control" name="registrationPassword" id="registrationPassword" placeholder="Enter Your Password" required>
+                    </div>
+                    <div class="form-group">
+                        <button name="registrationClick" class="btn btn-primary">Register</button>
+                        
+                    </div>
                 </form>
             </div>
         </div>

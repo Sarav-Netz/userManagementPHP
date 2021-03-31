@@ -27,8 +27,8 @@
         public $myQuery;
         private $tableName = 'workmate';
         //this method will add new user into our database
-        public function addUserQuery($name,$email,$role,$password){
-            $this->myQuery="INSERT INTO `$this->tableName` (`userName`, `userEmail`, `userRole`, `userPassword`) VALUES ('$name', '$email','$role','$password');";
+        public function addUserQuery($name,$email,$role,$password,$valid){
+            $this->myQuery="INSERT INTO `$this->tableName` (`userName`, `userEmail`, `userRole`, `userPassword`,`valid`) VALUES ('$name', '$email','$role','$password','$valid');";
             return $this->myQuery;
         }
         //This will select all the User fot the Admin
@@ -53,6 +53,16 @@
         #this will delete an end user from the database
         public function deleteQuery($userId){
             $this->myQuery="DELETE FROM $this->tableName WHERE $this->tableName.`userId`=$userId";
+            return $this->myQuery;
+        }
+        #this method will validate the user
+        public function validateQuery($userId){
+            $this->myQuery="UPDATE `$this->tableName` SET `valid`='yes' WHERE  `userId`=$userId;";
+            return $this->myQuery;
+        }
+        #this auery can be used to block the user login 
+        public function deValidateQuery($userId){
+            $this->myQuery="UPDATE `$this->tableName` SET `valid`='no' WHERE  `userId`=$userId;";
             return $this->myQuery;
         }
     }

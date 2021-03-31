@@ -3,3 +3,9 @@ CREATE TABLE `usermanagement`.`workmate` ( `userId` INT(11) NOT NULL AUTO_INCREM
 INSERT INTO `workmate` (`userId`, `userName`, `userEmail`, `userRole`, `userPassword`) VALUES ('1', 'Saravjeet Singh', 'sarav@sarav.com', 'admin', 'Sarav');
 
 UPDATE `workmate` SET `userPassword` = 'saravjeet' WHERE `workmate`.`userId` = 1;
+
+
+
+approve users  query:-
+
+UPDATE `usermanagement`.`workmate` SET `valid`='yes' WHERE  `userId`=7;

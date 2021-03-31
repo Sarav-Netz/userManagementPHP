@@ -57,14 +57,29 @@
             if($table){
                 while($row=$table->fetch_assoc()){
                     echo "</br>";
-                    echo "user ID".$row['userId'];
-                    echo "user name".$row['userName'];
-                    echo "userEmail:".$row['userEmail'];
-                    echo "user Role:".$row['userRole'];
-                    echo "</hr>";
+                    echo " user ID ".$row['userId'];
+                    echo " user name: ".$row['userName'];
+                    echo " userEmail: ".$row['userEmail'];
+                    echo " user Role: ".$row['userRole'];
+                    echo " valid: ".$row['valid'];
+                    echo "<hr/>";
                 }
             }else{
                 echo 'we are not able to do this task';
+            }
+        }
+        public function approveUser($con,$query){
+            if(mysqli_query($con,$query)){
+                echo '<script>alert("User is approved successfully!")</script>';
+            }else{
+                echo '<script>alert("We are not able to do this task!")</script>';
+            }
+        }
+        public function disApproveUser($con,$query){
+            if(mysqli_query($con,$query)){
+                echo '<script>alert("User is blocked successfully!")</script>';
+            }else{
+                echo '<script>alert("We are not able to do this task!")</script>';
             }
         }
     }
@@ -114,16 +129,17 @@
             $userRole=$_POST['newUserRole'];
             $userRole=strtolower($userRole);
             $userPassword=$_POST['newUserPassword'];
+            $newUservalid=$_POST['newUservalid'];
             // $userPassword=sha1($userPassword);
             $dbObj=new dbConnection();
             $dbObj->connectDb();
             $queryObj=new createQuery();
-            $queryObj->addUserQuery($userName,$userEmail,$userRole,$userPassword);
+            $queryObj->addUserQuery($userName,$userEmail,$userRole,$userPassword,$newUservalid);
             $userObj=new adminChange();
             $userObj->addNewUser($dbObj->con,$queryObj->myQuery);
             $dbObj->dissconnectDb();
         }else if(isset($_POST['otherUserInfo'])){
-            $userId=$_POST['searchOrDeleteUserId'];
+            $userId=$_POST['randomQueryUserId'];
             $dbObj=new dbConnection();
             $dbObj->connectDb();
             $queryObj=new createQuery();
@@ -132,13 +148,31 @@
             $userObj->showUser($dbObj->con,$queryObj->myQuery);
             $dbObj->dissconnectDb();
         }else if(isset($_POST['otherUserDeletion'])){
-            $userId=$_POST['searchOrDeleteUserId'];
+            $userId=$_POST['randomQueryUserId'];
             $dbObj=new dbConnection();
             $dbObj->connectDb();
             $queryObj=new createQuery();
             $queryObj->deleteQuery($userId);
             $userObj=new adminChange();
             $userObj->deleteAnyUser($dbObj->con,$queryObj->myQuery);
+            $dbObj->dissconnectDb();
+        }else if(isset($_POST['approveUserInfo'])){
+            $userId=$_POST['randomQueryUserId'];
+            $dbObj=new dbConnection();
+            $queryObj=new createQuery();
+            $userObj=new adminChange();
+            $dbObj->connectDb();
+            $queryObj->validateQuery($userId);
+            $userObj->approveUser($dbObj->con,$queryObj->myQuery);
+            $dbObj->dissconnectDb();
+        }else if(isset($_POST['blockUserInfo'])){
+            $userId=$_POST['randomQueryUserId'];
+            $dbObj=new dbConnection();
+            $queryObj=new createQuery();
+            $userObj=new adminChange();
+            $dbObj->connectDb();
+            $queryObj->deValidateQuery($userId);
+            $userObj->disApproveUser($dbObj->con,$queryObj->myQuery);
             $dbObj->dissconnectDb();
         }else if(isset($_POST['showAllMember'])){
             $dbObj=new dbConnection();
@@ -235,6 +269,7 @@
                                 <input type="text"  name="newUserEmail" class="form-control" placeholder="enter email for new user">
                                 <input type="text" class="form-control" name="newUserRole" placeholder="enter role for new user either endUser/admin" >
                                 <input type="text"  name="newUserPassword" class="form-control" placeholder="enter password for new user">
+                                <input type="text"  name="newUservalid" class="form-control" placeholder="user is valid or not yes/no">
                                 <button  class="btn btn-primary" name="addNewUser">Add User</button>
                                 <button  class="btn btn-default"  data-dismiss="modal">Close</button>
                             </form>
@@ -245,9 +280,11 @@
         </div>
         <div>
             <form action="" method="POST">
-                <input type="text" name="searchOrDeleteUserId" placeholder="enter user id" require>
+                <input type="text" name="randomQueryUserId" placeholder="enter user id" require>
                 <button class="btn btn-primary bg-dark" name="otherUserInfo">Show Info</button>
                 <button class="btn btn-primary bg-dark" name="otherUserDeletion">DeleteUser</button>
+                <button class="btn btn-primary bg-dark" name="approveUserInfo">Approve User</button>
+                <button class="btn btn-primary bg-dark" name="blockUserInfo">Block User</button>
             </form>
         </div>    
     </div>
