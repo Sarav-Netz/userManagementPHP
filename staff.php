@@ -7,7 +7,7 @@
                 session_start();
                 while($row=$table->fetch_assoc()){
                     if($row['userEmail']==$email){
-                        if($row['userRole']=="staff"){
+                        if($row['userRole']!="admin" && $row['userRole']!="manager"){
                             // $row['userPassword']=sha1($row['userPassword']);
                             if($row['userPassword']==$password){
                                 if($row['valid']=="yes"){
@@ -55,14 +55,18 @@
         $registrationName=$_POST['registrationName'];
         $registrationEmail=$_POST['registrationEmail'];
         $registrationPassword=$_POST['registrationPassword'];
-        $registrationRole="staff";
+        $registrationRole=$_POST['registrationRole'];
         $registrationValid="no";
-        $dbObj=new dbConnection();
-        $dbObj->connectDb();
-        $queryObj = new createQuery();
-        $queryObj->addUserQuery($registrationName,$registrationEmail,$registrationRole,$registrationPassword,$registrationValid);
-        $userObj = new handleUser();
-        $userObj->registerUser($dbObj->con,$queryObj->myQuery);
+        if($registrationRole!="admin" && $registrationRole!="manager"){
+            $dbObj=new dbConnection();
+            $dbObj->connectDb();
+            $queryObj = new createQuery();
+            $queryObj->addUserQuery($registrationName,$registrationEmail,$registrationRole,$registrationPassword,$registrationValid);
+            $userObj = new handleUser();
+            $userObj->registerUser($dbObj->con,$queryObj->myQuery);
+        }else{
+            echo '<script>Please specify Your role wisely!</script>';
+        }
     }elseif (isset($_POST['adminPageClick'])) {
         header("Location:admin.php"); 
     }elseif (isset($_POST['managerPageClick'])) {
@@ -124,6 +128,9 @@
                     </div>
                     <div class="form-group">
                         <input type="password" class="form-control" name="registrationPassword" id="registrationPassword" placeholder="Enter Your Password" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control" name="registrationRole" id="registrationRole" placeholder="Enter Your Role" required>
                     </div>
                     <div class="form-group">
                         <button name="registrationClick" class="btn btn-primary">Register</button>

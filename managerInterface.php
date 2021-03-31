@@ -13,7 +13,7 @@
         public function allowToChange($con,$query){
             $table=mysqli_query($con,$query);
             $row=$table->fetch_assoc();
-            if($row['userRole']=="staff"){
+            if($row['userRole']!="admin" && $row['userRole']!="manager"){
                 $this->makeChange=TRUE;
                 return $this->makeChange;
             }else{
@@ -68,7 +68,7 @@
             $table=mysqli_query($con,$query);
             if($table){
                 while($row=$table->fetch_assoc()){
-                    if($row['userRole']=="staff"){
+                    if($row['userRole']!="admin" && $row['userRole']!="manager"){
                         echo "</br>";
                         echo " user ID ".$row['userId'];
                         echo " user name ".$row['userName'];
@@ -100,6 +100,8 @@
         }
     }
     if($_SESSION['userRole']=="manager"){
+        #>>>>>>>>>>>>><<<<<<<<<<<<
+        #Current User Info
         if(isset($_POST['showMyDetailClick'])){
             $userId=(int)$_SESSION['userId'];
             $dbObj=new dbConnection();
@@ -109,11 +111,17 @@
             $userObj=new managerChange();
             $userObj->showUser($dbObj->con,$queryObj->myQuery);
             $dbObj->dissconnectDb();
-        }else if (isset($_POST['logoutClick'])) {
+        }
+        #>>>>>>>>>>>>><<<<<<<<<<<<
+        #Log Out Condition
+        else if (isset($_POST['logoutClick'])) {
             session_destroy();
             echo '<script>alert("You clicked me! Now i\'m logging you out")</script>';
             header("Location:manager.php");
-        }else if(isset($_POST['updateInfo'])){
+        }
+        #>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<
+        #Udate Information condition
+        else if(isset($_POST['updateInfo'])){
             $userId=$_POST['userId'];
             $userName=$_POST['userName'];
             $userEmail=$_POST['userEmail'];
@@ -130,7 +138,10 @@
             }else{
                 echo '<script>alert("You are not allowed to do this task")</script>';
             }
-        }elseif (isset($_POST['updatePassword'])) {
+        }
+        #--------->>>>>>>>>>>><<<<<<<<<<<<<--------
+        # Password updation command
+        elseif (isset($_POST['updatePassword'])) {
             $userId=$_POST['userId'];
             $userEnteredPassword=$_POST['userEnteredPassword'];
             $userConformationPassword=$_POST['userConformationPassword'];
@@ -151,14 +162,18 @@
             }else{
                 echo '<script>alert("You are not allowed to do this task")</script>';
             }
-        }else if(isset($_POST['addNewUser'])){
+        }
+        #>>>>>>>>>>>>><<<<<<<<<<<<
+        #this condition will work to add new user
+        else if(isset($_POST['addNewUser'])){
             $userName=$_POST['newUserName'];
             $userEmail=$_POST['newUserEmail'];
-            $userRole="staff";
+            $userRole=$_POST['newUserRole'];
             $userRole=strtolower($userRole);
             $userPassword=$_POST['newUserPassword'];
-            $valid='no';
-            if($userRole=='staff'){
+            $valid=$_POST['newUserValid'];
+            $valid=strtolower($valid);
+            if($userRole!='admin' && $userRole!="manager"){
                 $dbObj=new dbConnection();
                 $dbObj->connectDb();
                 $queryObj=new createQuery();
@@ -169,7 +184,10 @@
             }else{
                 echo '<script>alert("You are allowed to add staff members only")</script>';
             }
-        }else if(isset($_POST['otherUserInfo'])){
+        }
+        #----------->>>>>>>>><<<<<<<<<<<<<<<<-------------
+        # information of user other than the current User
+        else if(isset($_POST['otherUserInfo'])){
             $userId=$_POST['randomQueryUserId'];
             $dbObj=new dbConnection();
             $queryObj=new createQuery();
@@ -184,7 +202,10 @@
             }else{
                 echo '<script>alert("You are not allowed to do this task")</script>';
             }
-        }else if(isset($_POST['otherUserDeletion'])){
+        }
+        #--->>>>>>>>>>>>><<<<<<<<<<<<------
+        #Deletion of the end users bu manager
+        else if(isset($_POST['otherUserDeletion'])){
             $userId=$_POST['randomQueryUserId'];
             $dbObj=new dbConnection();
             $queryObj=new createQuery();
@@ -199,7 +220,10 @@
             }else{
                 echo '<script>alert("You are not allowed to do this task")</script>';
             }
-        }else if(isset($_POST['approveStaff'])){
+        }
+        #>>>>>>>>>>>>><<<<<<<<<
+        #condition to validate User
+        else if(isset($_POST['approveStaff'])){
             $userId=$_POST['randomQueryUserId'];
             $dbObj=new dbConnection();
             $queryObj=new createQuery();
@@ -214,7 +238,10 @@
             }else{
                 echo '<script>alert("You are not allowed to do this task")</script>';
             }
-        }else if(isset($_POST['disApproveStaff'])){
+        }
+        #>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<
+        #devalidate any user
+        else if(isset($_POST['disApproveStaff'])){
             $userId=$_POST['randomQueryUserId'];
             $dbObj=new dbConnection();
             $queryObj=new createQuery();
@@ -229,7 +256,10 @@
             }else{
                 echo '<script>alert("You are not allowed to do this task")</script>';
             }
-        }else if(isset($_POST['showAllMember'])){
+        }
+        #>>>>>>>>>>>>>><<<<<<<<<<<<<
+        # SHow all member accept admin and manager
+        else if(isset($_POST['showAllMember'])){
             $dbObj=new dbConnection();
             $dbObj->connectDb();
             $queryObj=new createQuery();
@@ -320,9 +350,16 @@
                         </div>
                         <div class="modal-body">
                             <form action="" method="POST">
+                                <label>Name of the user</label>
                                 <input type="text" class="form-control" name="newUserName" placeholder="Enter Name for new user">
+                                <label>Email of the User</label>
                                 <input type="text"  name="newUserEmail" class="form-control" placeholder="enter email for new user">
+                                <label>Password for the user</label>
                                 <input type="text"  name="newUserPassword" class="form-control" placeholder="enter password for new user">
+                                <label>Profile of the User</label>
+                                <input type="text"  name="newUserRole" class="form-control" placeholder="enter Role for new user">
+                                <label>make user valid or not</label>
+                                <input type="text"  name="newUserValid" class="form-control" placeholder="yes/no">
                                 <button  class="btn btn-primary" name="addNewUser">Add </button>
                                 <button  class="btn btn-default"  data-dismiss="modal">Close</button>
                             </form>

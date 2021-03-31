@@ -39,7 +39,7 @@
             }
         }
     }
-    if($_SESSION['userRole']=="staff"){
+    if($_SESSION['userRole']!="admin" && $_SESSION['userRole']="manager"){
         if(isset($_POST['showDetailClick'])){
             $userId=(int)$_SESSION['userId'];
             $dbObj=new dbConnection();
@@ -79,6 +79,8 @@
             }else{
                 echo '<script>alert("please enter password carefully!")</script>';
             }
+        }else if(isset($_POST['todoClick'])){
+            echo '<script>alert("i am in the process!")</script>';
         }
     }else{
         echo '<script>alert("You are not logged in as a staff member! go back and logged in")</script>';
@@ -103,11 +105,12 @@
     </div>
     <div class="container">
         <form action="" method="POST"></br>
-        <button class="btn btn-danger" name="showDetailClick">Showdetail</button></br>
-        <button class="btn btn-danger" name="logoutClick">Logout</button>
+        <button class="btn btn-danger" name="showDetailClick">Showdetail</button></br></br>
+        <button class="btn btn-danger" name="logoutClick">Logout</button></br></br>
+        <button class="btn btn-danger" name="todoClick">My To Do list</button></br></br>
         </form>
         <div>
-            <button name="updateInfoModal" data-toggle="modal" data-target="#updationInfoModal" class="btn btn-secondary">Update Your Information</button>
+            <button name="updateInfoModal" data-toggle="modal" data-target="#updationInfoModal" class="btn btn-secondary">Update Your Information</button></br></br>
             <div class="modal" id="updationInfoModal" role="dialog">
                 <div class="modal-dialog">
                     <div class="modal-content">
